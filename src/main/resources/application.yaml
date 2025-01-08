@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: signaling_server
+  profiles:
+    active: dev
+    group:
+      dev: db, key
+      prod: db, key
