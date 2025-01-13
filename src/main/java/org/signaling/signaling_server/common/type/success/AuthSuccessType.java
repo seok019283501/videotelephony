@@ -15,16 +15,16 @@ public enum AuthSuccessType implements SuccessTypeCode {
 
     @Override
     public Integer getCode() {
-        return null;
+        return this.code;
     }
 
     @Override
     public String getMessage() {
-        return null;
+        return this.message;
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return this.description;
     }
 }

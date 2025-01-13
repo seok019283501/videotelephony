@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthOpenApiController {
     private final AuthService authService;
     @PostMapping("/sign-up")
-    public Api signUp(
+    public Api<?> signUp(
             @Valid
             @RequestBody SignUpRequest signUpRequest
     ){
