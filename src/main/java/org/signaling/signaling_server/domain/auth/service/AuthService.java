@@ -3,10 +3,12 @@ package org.signaling.signaling_server.domain.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.signaling.signaling_server.common.exception.BadRequestException;
 import org.signaling.signaling_server.common.exception.NotFoundException;
+import org.signaling.signaling_server.common.exception.UnauthorizedException;
 import org.signaling.signaling_server.common.type.error.AuthErrorType;
 import org.signaling.signaling_server.common.utils.JwtUtils;
 import org.signaling.signaling_server.domain.auth.dto.request.SignInRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignUpRequest;
+import org.signaling.signaling_server.domain.auth.dto.response.ReissueAccessTokenResponse;
 import org.signaling.signaling_server.domain.auth.dto.response.SignInResponse;
 import org.signaling.signaling_server.domain.auth.mapper.AuthEntityMapper;
 import org.signaling.signaling_server.domain.auth.mapper.AuthResponseMapper;
@@ -73,13 +75,13 @@ public class AuthService {
         String refreshToken = jwtUtils.generateRefreshToken(memberEntity.getName(), memberEntity.getId());
 
         //refresh token redis 저장
-        RefreshToken refreshTokenEntity = TokenEntityMapper.toRefreshToken(memberEntity.getId(), refreshToken);
+        RefreshToken refreshTokenEntity = TokenEntityMapper.toRefreshToken(accessToken, refreshToken);
         refreshTokenRepository.save(refreshTokenEntity);
 
         accessToken = jwtUtils.includeBearer(accessToken);
         refreshToken = jwtUtils.includeBearer(refreshToken);
 
-        return AuthResponseMapper.from(accessToken,refreshToken);
+        return AuthResponseMapper.toSignInResponse(accessToken,refreshToken);
     }
 
     //로그아웃
@@ -92,7 +94,7 @@ public class AuthService {
         }
 
         //refresh token 화이트 리스트 제거
-        refreshTokenRepository.deleteByMemberId(userDetails.getId());
+        refreshTokenRepository.deleteByAccessToken(accessToken);
 
         accessToken = accessToken.substring(7);
 
@@ -104,5 +106,39 @@ public class AuthService {
 
         //access token 블랙리스트 저장
         accessTokenRepository.save(accessTokenEntity);
+    }
+
+    //토큰 재발급
+    public ReissueAccessTokenResponse ReissueAccessToken(Authentication authentication, String refreshToken) {
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+
+        refreshToken = refreshToken.substring(7);
+
+        //refresh token 유무 확인
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(()->new UnauthorizedException(AuthErrorType.TOKEN_NOT_FOUND));
+
+        String accessToken = refreshTokenEntity.getAccessToken();
+
+        //access token 남은 시간 계산
+        Date date = jwtUtils.getExpirationDateFromToken(accessToken);
+        long ttl = (date.getTime() - System.currentTimeMillis()) / 1000;
+
+        AccessToken accessTokenEntity = TokenEntityMapper.toAccessToken(ttl,accessToken);
+
+        //기존 access token 블랙리스트
+        accessTokenRepository.save(accessTokenEntity);
+
+        //access token 재발급
+        String newAccessToken = jwtUtils.generateAccessToken(userDetails.getMemberEntity().getUsername(), userDetails.getId());
+
+        //refreshTokenEntity accessToken 변경
+        RefreshToken newRefreshTokenEntity = TokenEntityMapper.toRefreshToken(newAccessToken,refreshToken);
+
+        refreshTokenRepository.save(newRefreshTokenEntity);
+
+        newAccessToken = jwtUtils.includeBearer(newAccessToken);
+
+        return AuthResponseMapper.toReissueAccessTokenResponse(newAccessToken);
     }
 }
