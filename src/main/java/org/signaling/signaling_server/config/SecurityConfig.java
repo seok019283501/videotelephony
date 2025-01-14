@@ -1,6 +1,7 @@
 package org.signaling.signaling_server.config;
 
 import lombok.RequiredArgsConstructor;
+import org.signaling.signaling_server.filter.ExceptionHandlerFilter;
 import org.signaling.signaling_server.filter.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtRequestFilter jwtRequestFilter;
-
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
     @Bean
     BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -44,7 +45,8 @@ public class SecurityConfig {
             auth.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         });
 
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(exceptionHandlerFilter, JwtRequestFilter.class);
         return http.build();
     }
 

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class AuthEntityMapper {
 
-    public static MemberEntity of(SignUpRequest signUpRequest){
+    public static MemberEntity toEntity(SignUpRequest signUpRequest){
         return MemberEntity.builder()
                 .name(signUpRequest.name())
                 .birth(signUpRequest.birth())
