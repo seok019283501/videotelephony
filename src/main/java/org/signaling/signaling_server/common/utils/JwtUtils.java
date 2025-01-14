@@ -109,6 +109,11 @@ public class JwtUtils {
         return Long.valueOf(String.valueOf(claims.get("jti")));
     }
 
+    public String getSubject(String token){
+        final Claims claims = getAllClaimsFromToken(token);
+        return String.valueOf(claims.get("sub"));
+    }
+
     public String includeBearer(String token) {
         return "Bearer " + token;
     }

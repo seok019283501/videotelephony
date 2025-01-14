@@ -45,6 +45,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String jwtToken = null;
         Long jwtId = null;
+        String jwtSub = null;
 
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
@@ -54,6 +55,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         jwtToken = authorizationHeader.substring(7);
+
+        jwtSub = jwtUtils.getSubject(jwtToken);
+        if(uri.contains("/api/auth/refresh-token") && !jwtSub.equals("refreshToken")){
+            throw new UnauthorizedException(AuthErrorType.HEADER_INVALID);
+        }
+
         // access token 블랙리스트 확인
         if (jwtUtils.blackListAccessToken(jwtToken)) {
             throw new UnauthorizedException(AuthErrorType.HEADER_INVALID);
