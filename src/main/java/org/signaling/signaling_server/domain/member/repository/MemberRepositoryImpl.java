@@ -31,5 +31,10 @@ public class MemberRepositoryImpl implements MemberRepository {
         jpaMemberRepository.save(memberEntity);
     }
 
+    @Override
+    public Optional<MemberEntity> findByUsername(String username) {
+        return jpaMemberRepository.findByUsername(username);
+    }
+
 
 }
