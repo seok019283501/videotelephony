@@ -13,4 +13,5 @@ public interface MemberRepository {
 
     void save(MemberEntity memberEntity);
 
+    Optional<MemberEntity> findByUsername(String username);
 }

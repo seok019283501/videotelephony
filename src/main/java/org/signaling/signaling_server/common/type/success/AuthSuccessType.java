@@ -1,7 +1,8 @@
 package org.signaling.signaling_server.common.type.success;
 
 public enum AuthSuccessType implements SuccessTypeCode {
-    SIGN_UP(201, "CREATE", "회원 가입에 성공하였습니다.");
+    SIGN_UP(201, "CREATE", "회원 가입에 성공하였습니다."),
+    SIGN_IN(200, "OK", "로그인에 성공하였습니다.");;
 
     private final Integer code;
     private final String message;

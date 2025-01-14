@@ -31,13 +31,13 @@ public class JwtUtils {
         this.key = Keys.hmacShaKeyFor(decodedKey);
     }
 
-    public String generateAccessToken(String nickname, Long memberId) {
+    public String generateAccessToken(String name, Long memberId) {
         Date nowDate = new Date();
         Date expiration = new Date(nowDate.getTime() + Duration.ofHours(2).toMillis());
         String jwtToken =
                 Jwts.builder()
-                        .claim("name", nickname)
-                        .claim("sub", "signaling")
+                        .claim("name", name)
+                        .claim("sub", "accessToken")
                         .claim("jti", String.valueOf(memberId))
                         .claim("iat", nowDate)
                         .claim("exp", expiration)
@@ -47,13 +47,13 @@ public class JwtUtils {
         return jwtToken;
     }
 
-    public String generateRefreshToken(String nickname, Long memberId) {
+    public String generateRefreshToken(String name, Long memberId) {
         Date nowDate = new Date();
         Date expiration = new Date(nowDate.getTime() + Duration.ofDays(30).toMillis());
         String jwtToken =
                 Jwts.builder()
-                        .claim("name", nickname)
-                        .claim("sub", "meong-ha-nyang")
+                        .claim("name", name)
+                        .claim("sub", "refreshToken")
                         .claim("jti", String.valueOf(memberId))
                         .claim("iat", nowDate)
                         .claim("exp", expiration)
