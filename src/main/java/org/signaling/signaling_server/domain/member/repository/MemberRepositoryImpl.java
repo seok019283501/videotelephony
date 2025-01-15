@@ -41,10 +41,18 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public void updateByPassword(String password, String email) {
+    public void updatePasswordByEmail(String password, String email) {
         jpaQueryFactory.update(memberEntity)
                 .set(memberEntity.password, password)
                 .where(memberEntity.email.eq(email))
+                .execute();;
+    }
+
+    @Override
+    public void updatePasswordById(String password, Long id) {
+        jpaQueryFactory.update(memberEntity)
+                .set(memberEntity.password, password)
+                .where(memberEntity.id.eq(id))
                 .execute();;
     }
 

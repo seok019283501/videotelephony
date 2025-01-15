@@ -15,5 +15,7 @@ public interface MemberRepository {
 
     Optional<MemberEntity> findByUsername(String username);
 
-    void updateByPassword(String password, String email);
+    void updatePasswordByEmail(String password, String email);
+
+    void updatePasswordById(String password, Long id);
 }

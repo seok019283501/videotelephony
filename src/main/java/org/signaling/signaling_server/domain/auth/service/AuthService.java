@@ -10,10 +10,7 @@ import org.signaling.signaling_server.common.exception.NotFoundException;
 import org.signaling.signaling_server.common.exception.UnauthorizedException;
 import org.signaling.signaling_server.common.type.error.AuthErrorType;
 import org.signaling.signaling_server.common.utils.JwtUtils;
-import org.signaling.signaling_server.domain.auth.dto.request.EmailRequest;
-import org.signaling.signaling_server.domain.auth.dto.request.SignInRequest;
-import org.signaling.signaling_server.domain.auth.dto.request.SignUpRequest;
-import org.signaling.signaling_server.domain.auth.dto.request.VerificationCodeRequest;
+import org.signaling.signaling_server.domain.auth.dto.request.*;
 import org.signaling.signaling_server.domain.auth.dto.response.ReissueAccessTokenResponse;
 import org.signaling.signaling_server.domain.auth.dto.response.SignInResponse;
 import org.signaling.signaling_server.domain.auth.mapper.AuthEntityMapper;
@@ -97,8 +94,7 @@ public class AuthService {
     }
 
     //로그아웃
-    public void signOut(Authentication authentication, String accessToken) {
-        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+    public void signOut(String accessToken) {
 
         //redis의 블랙리스트로 access token이 있는 경우
         if (accessTokenRepository.existsByAccessToken(accessToken)) {
@@ -244,7 +240,7 @@ public class AuthService {
 
         String encodedPassword = bCryptPasswordEncoder.encode(ispwd);
 
-        memberRepository.updateByPassword(encodedPassword,emailRequest.email());
+        memberRepository.updatePasswordByEmail(encodedPassword,emailRequest.email());
 
         try{
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
@@ -317,5 +313,25 @@ public class AuthService {
             array[index] = temp;
         }
         return new String(array);
+    }
+
+    @Transactional
+    public void changePassword(Authentication authentication, ChangePasswordRequest changePasswordRequest) {
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+
+        //비밀번호 비교
+        if(bCryptPasswordEncoder.matches(userDetails.getMemberEntity().getPassword(),changePasswordRequest.password())){
+            throw new BadRequestException(AuthErrorType.PASSWORD_NOT_MATCH);
+        }
+
+        //비밀번호 비교
+        if(bCryptPasswordEncoder.matches(userDetails.getMemberEntity().getPassword(),changePasswordRequest.password())){
+            throw new BadRequestException(AuthErrorType.PASSWORD_NOT_MATCH);
+        }
+
+        String encodedPassword = bCryptPasswordEncoder.encode(changePasswordRequest.password());
+
+        memberRepository.updatePasswordById(encodedPassword,userDetails.getId());
+
     }
 }
