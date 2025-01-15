@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 
 public class AuthEntityMapper {
 
-    public static MemberEntity toEntity(SignUpRequest signUpRequest){
+    public static MemberEntity toEntity(SignUpRequest signUpRequest, String encodedPassword){
         return MemberEntity.builder()
                 .name(signUpRequest.name())
                 .birth(signUpRequest.birth())
                 .email(signUpRequest.email())
                 .birth(signUpRequest.birth())
                 .nickname(signUpRequest.nickname())
-                .password(signUpRequest.password())
+                .password(encodedPassword)
                 .username(signUpRequest.username())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

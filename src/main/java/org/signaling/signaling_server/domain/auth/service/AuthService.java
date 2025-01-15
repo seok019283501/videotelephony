@@ -29,6 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Random;
 
@@ -43,6 +44,7 @@ public class AuthService {
     private final AccessTokenRepository accessTokenRepository;
     private final JavaMailSender javaMailSender;
     private final EmailCodeRepository emailCodeRepository;
+    private static final SecureRandom rd = new SecureRandom();
 
     //회원가입
     public void signUp(SignUpRequest signUpRequest){
@@ -61,9 +63,9 @@ public class AuthService {
         if(!signUpRequest.password().equals(signUpRequest.passwordConfirm())){
             throw new BadRequestException(AuthErrorType.PASSWORD_NOT_MATCH);
         }
-
+        String encodedPassword = bCryptPasswordEncoder.encode(signUpRequest.password());
         //entity 전환
-        MemberEntity memberEntity = AuthEntityMapper.toEntity(signUpRequest);
+        MemberEntity memberEntity = AuthEntityMapper.toEntity(signUpRequest,encodedPassword);
 
         //회원저장
         memberRepository.save(memberEntity);
@@ -76,7 +78,7 @@ public class AuthService {
                 .orElseThrow(()-> new NotFoundException(AuthErrorType.NOT_FOUND));
 
         //비밀번호 비교
-        if(bCryptPasswordEncoder.matches(signInRequest.password(),memberEntity.getPassword())){
+        if(bCryptPasswordEncoder.matches(memberEntity.getPassword(),signInRequest.password())){
             throw new BadRequestException(AuthErrorType.PASSWORD_NOT_MATCH);
         }
 
@@ -155,7 +157,6 @@ public class AuthService {
 
     public String getCode(){
         StringBuilder sb = new StringBuilder();
-        Random rd = new Random();
 
         for(int i=0;i<7;i++){
             sb.append((char)(rd.nextInt(26)+65));
@@ -228,5 +229,93 @@ public class AuthService {
         if(!emailCode.getCode().equals(verificationCodeRequest.code())){
             throw new BadRequestException(AuthErrorType.CODE_NOT_MATCH);
         }
+    }
+
+    //임시 비밀번호 발급
+    @Transactional
+    public void issuePassword(EmailRequest emailRequest) {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        //이메일 확인
+        if(!memberRepository.existsByEmail(emailRequest.email())){
+            throw new BadRequestException(AuthErrorType.EMAIL_NOT_MATCH);
+        }
+
+        String ispwd = getIssuePassword();
+
+        String encodedPassword = bCryptPasswordEncoder.encode(ispwd);
+
+        memberRepository.updateByPassword(encodedPassword,emailRequest.email());
+
+        try{
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+
+            // 메일을 받을 수신자 설정
+            mimeMessageHelper.setTo(emailRequest.email());
+            // 메일의 제목 설정
+            mimeMessageHelper.setSubject("VISION CALL 메일 전송");
+
+            // html 문법 적용한 메일의 내용
+            String content = """
+                    <!DOCTYPE html>
+                    <html xmlns:th="http://www.thymeleaf.org">    
+                    <body>
+                    <div style="margin:100px;">
+                        <h1> 임시 비밀번호 </h1>
+                        <br>          
+                        <div align="center" style="border:1px solid black;">
+                            <h3> %s </h3>
+                        </div>
+                        <br/>
+                    </div>          
+                    </body>
+                    </html>
+                    """.formatted(ispwd);;
+
+            // 메일의 내용 설정
+            mimeMessageHelper.setText(content, true);
+
+            javaMailSender.send(mimeMessage);
+
+            log.info("메일 발송 성공");
+        } catch (Exception e) {
+            log.info("메일 발송 실패");
+            throw new InternalServerException(AuthErrorType.EMAIL_SEND_FAIL);
+        }
+    }
+
+    public String getIssuePassword(){
+
+        String uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowercase = "abcdefghijklmnopqrstuvwxyz";
+        String digits = "0123456789";
+        String specialCharacters = "!@#$%^&*()-_+=<>?";
+        String allCharacters = uppercase + lowercase + digits + specialCharacters;
+
+        StringBuilder password = new StringBuilder(8);
+
+        // 적어도 한 글자씩 포함되도록 보장
+        password.append(uppercase.charAt(rd.nextInt(uppercase.length())));
+        password.append(lowercase.charAt(rd.nextInt(lowercase.length())));
+        password.append(digits.charAt(rd.nextInt(digits.length())));
+        password.append(specialCharacters.charAt(rd.nextInt(specialCharacters.length())));
+
+        // 나머지 글자는 모든 문자 중에서 랜덤하게 선택
+        for (int i = 4; i < 8; i++) {
+            password.append(allCharacters.charAt(rd.nextInt(allCharacters.length())));
+        }
+
+        // 섞어서 랜덤성을 더함
+        return shuffleString(password.toString());
+    }
+
+    String shuffleString(String input) {
+        char[] array = input.toCharArray();
+        for (int i = array.length - 1; i > 0; i--) {
+            int index = rd.nextInt(i + 1);
+            char temp = array[i];
+            array[i] = array[index];
+            array[index] = temp;
+        }
+        return new String(array);
     }
 }

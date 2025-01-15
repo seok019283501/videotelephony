@@ -53,6 +53,25 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.4.1'
 }
 
+def generated = file("src/main/generated")
+
+tasks.withType(JavaCompile) {
+    options.generatedSourceOutputDirectory = file(generated)
+}
+
+clean {
+    delete generated
+}
+
+// Add generated sources to the main source set
+sourceSets {
+    main {
+        java {
+            srcDir generated
+        }
+    }
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }

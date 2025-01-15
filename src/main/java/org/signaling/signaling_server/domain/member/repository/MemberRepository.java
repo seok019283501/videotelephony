@@ -14,4 +14,6 @@ public interface MemberRepository {
     void save(MemberEntity memberEntity);
 
     Optional<MemberEntity> findByUsername(String username);
+
+    void updateByPassword(String password, String email);
 }

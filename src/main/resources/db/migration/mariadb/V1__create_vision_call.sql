@@ -4,7 +4,7 @@ CREATE TABLE `member` (
                           `username` varchar(50) NOT NULL,
                           `email` varchar(50) UNIQUE NOT NULL,
                           `name` varchar(50) NOT NULL,
-                          `password` varchar(50) NOT NULL,
+                          `password` varchar(200) NOT NULL,
                           `birth` char(10) NOT NULL,
                           `created_at` datetime NOT NULL,
                           `updated_at` datetime NOT NULL
