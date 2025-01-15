@@ -6,6 +6,7 @@ import org.signaling.signaling_server.common.api.Api;
 import org.signaling.signaling_server.domain.auth.dto.request.EmailRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignInRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignUpRequest;
+import org.signaling.signaling_server.domain.auth.dto.request.VerificationCodeRequest;
 import org.signaling.signaling_server.domain.auth.dto.response.SignInResponse;
 import org.springframework.security.core.Authentication;
 
@@ -18,4 +19,6 @@ public interface AuthOpenApi {
     Api<SignInResponse> signIn(SignInRequest signInRequest);
     @Operation(summary = "이메일 인증코드를 발송합니다.", description = "담당자: 최민석")
     Api<?> sendCode(EmailRequest emailRequest);
+    @Operation(summary = "이메일 인증코드를 발송합니다.", description = "담당자: 최민석")
+    Api<?> checkVerification(VerificationCodeRequest verificationCodeRequest);
 }

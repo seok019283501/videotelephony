@@ -7,7 +7,9 @@ public enum AuthErrorType implements ErrorTypeCode {
     EMAIL_DUPLICATED("BAD REQUEST", "이메일이 중복되었습니다."),
     USERNAME_DUPLICATED("BAD REQUEST", "아이디가 중복되었습니다."),
     PASSWORD_NOT_MATCH("BAD REQUEST", "비밀번호가 일치하지 않습니다."),
-    EMAIL_SEND_FAIL("INTERNAL SERVER ERROR", "이메일 전송에 실패하였습니다.");
+    EMAIL_SEND_FAIL("INTERNAL SERVER ERROR", "이메일 전송에 실패하였습니다."),
+    EMAIL_NOT_MATCH("BAD REQUEST", "이메일이 일치하지 않습니다."),
+    CODE_NOT_MATCH("BAD REQUEST", "인증코드가 일치하지 않습니다.");
 
     private final String message;
     private final String description;

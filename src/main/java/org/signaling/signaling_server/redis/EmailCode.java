@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.index.Indexed;
 @Getter
 @Builder
 @AllArgsConstructor
-@RedisHash(value = "emailCode", timeToLive = 60)
+@RedisHash(value = "emailCode", timeToLive = 60*5)
 public class EmailCode {
     @Id
     private Long id;

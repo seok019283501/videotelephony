@@ -13,6 +13,7 @@ import org.signaling.signaling_server.common.utils.JwtUtils;
 import org.signaling.signaling_server.domain.auth.dto.request.EmailRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignInRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignUpRequest;
+import org.signaling.signaling_server.domain.auth.dto.request.VerificationCodeRequest;
 import org.signaling.signaling_server.domain.auth.dto.response.ReissueAccessTokenResponse;
 import org.signaling.signaling_server.domain.auth.dto.response.SignInResponse;
 import org.signaling.signaling_server.domain.auth.mapper.AuthEntityMapper;
@@ -213,6 +214,19 @@ public class AuthService {
         } catch (Exception e) {
             log.info("메일 발송 실패");
             throw new InternalServerException(AuthErrorType.EMAIL_SEND_FAIL);
+        }
+    }
+
+    //인증코드 검증
+    public void checkVerification(VerificationCodeRequest verificationCodeRequest) {
+
+
+        EmailCode emailCode = emailCodeRepository.findByEmail(verificationCodeRequest.email())
+                .orElseThrow(()->new BadRequestException(AuthErrorType.EMAIL_NOT_MATCH));
+
+        //코드 검증
+        if(!emailCode.getCode().equals(verificationCodeRequest.code())){
+            throw new BadRequestException(AuthErrorType.CODE_NOT_MATCH);
         }
     }
 }
