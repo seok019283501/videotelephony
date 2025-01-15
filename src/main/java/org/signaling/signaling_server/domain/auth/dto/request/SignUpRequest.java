@@ -13,6 +13,6 @@ public record SignUpRequest(
         @NotBlank  @Schema(description = "회원이름", example = "최민석") String name,
         @NotBlank @Schema(description = "닉네임", example = "무심천자전거길") String nickname,
         @Email @NotBlank @Schema(description = "이메일", example = "exemple123@google.com") String email,
-        @NotBlank @Schema(description = "생년월일", example = "최민석") String birth
+        @NotBlank @Schema(description = "생년월일", example = "2000-04-21") String birth
 ) {
 }
