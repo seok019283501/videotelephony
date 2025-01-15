@@ -2,6 +2,7 @@ package org.signaling.signaling_server.domain.auth.mapper;
 
 import org.signaling.signaling_server.domain.auth.dto.request.SignUpRequest;
 import org.signaling.signaling_server.entity.member.MemberEntity;
+import org.signaling.signaling_server.redis.EmailCode;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +19,13 @@ public class AuthEntityMapper {
                 .username(signUpRequest.username())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    public static EmailCode toEmailCode(String email, String code){
+        return EmailCode.builder()
+                .email(email)
+                .code(code)
                 .build();
     }
 }

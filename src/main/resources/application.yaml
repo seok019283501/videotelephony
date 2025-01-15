@@ -4,5 +4,5 @@ spring:
   profiles:
     active: dev
     group:
-      dev: db, key
-      prod: db, key
+      dev: db, key, mail
+      prod: db, key, mail

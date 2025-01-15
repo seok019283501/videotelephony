@@ -1,11 +1,16 @@
 package org.signaling.signaling_server.domain.auth.service;
 
+import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.signaling.signaling_server.common.exception.BadRequestException;
+import org.signaling.signaling_server.common.exception.InternalServerException;
 import org.signaling.signaling_server.common.exception.NotFoundException;
 import org.signaling.signaling_server.common.exception.UnauthorizedException;
 import org.signaling.signaling_server.common.type.error.AuthErrorType;
 import org.signaling.signaling_server.common.utils.JwtUtils;
+import org.signaling.signaling_server.domain.auth.dto.request.EmailRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignInRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignUpRequest;
 import org.signaling.signaling_server.domain.auth.dto.response.ReissueAccessTokenResponse;
@@ -16,17 +21,18 @@ import org.signaling.signaling_server.domain.auth.mapper.TokenEntityMapper;
 import org.signaling.signaling_server.domain.member.dto.CustomUserDetail;
 import org.signaling.signaling_server.domain.member.repository.MemberRepository;
 import org.signaling.signaling_server.entity.member.MemberEntity;
-import org.signaling.signaling_server.redis.AccessToken;
-import org.signaling.signaling_server.redis.AccessTokenRepository;
-import org.signaling.signaling_server.redis.RefreshToken;
-import org.signaling.signaling_server.redis.RefreshTokenRepository;
+import org.signaling.signaling_server.redis.*;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Random;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuthService {
     private final MemberRepository memberRepository;
@@ -34,6 +40,8 @@ public class AuthService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AccessTokenRepository accessTokenRepository;
+    private final JavaMailSender javaMailSender;
+    private final EmailCodeRepository emailCodeRepository;
 
     //회원가입
     public void signUp(SignUpRequest signUpRequest){
@@ -61,6 +69,7 @@ public class AuthService {
     }
 
     //로그인
+    @Transactional
     public SignInResponse signIn(SignInRequest signInRequest) {
         MemberEntity memberEntity = memberRepository.findByUsername(signInRequest.username())
                 .orElseThrow(()-> new NotFoundException(AuthErrorType.NOT_FOUND));
@@ -108,6 +117,7 @@ public class AuthService {
         accessTokenRepository.save(accessTokenEntity);
     }
 
+    @Transactional
     //토큰 재발급
     public ReissueAccessTokenResponse ReissueAccessToken(Authentication authentication, String refreshToken) {
         CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
@@ -140,5 +150,69 @@ public class AuthService {
         newAccessToken = jwtUtils.includeBearer(newAccessToken);
 
         return AuthResponseMapper.toReissueAccessTokenResponse(newAccessToken);
+    }
+
+    public String getCode(){
+        StringBuilder sb = new StringBuilder();
+        Random rd = new Random();
+
+        for(int i=0;i<7;i++){
+            sb.append((char)(rd.nextInt(26)+65));
+        }
+
+        return sb.toString();
+    }
+
+    @Transactional
+    //인증코드 발송
+    public void sendCode(EmailRequest emailRequest) {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        //이메일 중복 확인
+        if(memberRepository.existsByEmail(emailRequest.email())){
+            throw new BadRequestException(AuthErrorType.EMAIL_DUPLICATED);
+        }
+
+        String code = getCode();
+
+        EmailCode emailCode = AuthEntityMapper.toEmailCode(emailRequest.email(),code);
+
+        //코드 redis 저장
+        emailCodeRepository.save(emailCode);
+
+        try{
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+
+            // 메일을 받을 수신자 설정
+            mimeMessageHelper.setTo(emailRequest.email());
+            // 메일의 제목 설정
+            mimeMessageHelper.setSubject("VISION CALL 메일 전송");
+
+            // html 문법 적용한 메일의 내용
+            String content = """
+                    <!DOCTYPE html>
+                    <html xmlns:th="http://www.thymeleaf.org">    
+                    <body>
+                    <div style="margin:100px;">
+                        <h1> 인증코드 </h1>
+                        <br>          
+                        <div align="center" style="border:1px solid black;">
+                            <h3> %s </h3>
+                        </div>
+                        <br/>
+                    </div>          
+                    </body>
+                    </html>
+                    """.formatted(code);;
+
+            // 메일의 내용 설정
+            mimeMessageHelper.setText(content, true);
+
+            javaMailSender.send(mimeMessage);
+
+            log.info("메일 발송 성공");
+        } catch (Exception e) {
+            log.info("메일 발송 실패");
+            throw new InternalServerException(AuthErrorType.EMAIL_SEND_FAIL);
+        }
     }
 }
