@@ -7,6 +7,7 @@ import org.signaling.signaling_server.common.type.success.AuthSuccessType;
 import org.signaling.signaling_server.domain.auth.dto.request.EmailRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignInRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignUpRequest;
+import org.signaling.signaling_server.domain.auth.dto.request.VerificationCodeRequest;
 import org.signaling.signaling_server.domain.auth.dto.response.SignInResponse;
 import org.signaling.signaling_server.domain.auth.service.AuthService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,5 +45,15 @@ public class AuthOpenApiController implements AuthOpenApi {
     ){
         authService.sendCode(emailRequest);
         return Api.success(AuthSuccessType.EMAIL_SEND_SUCCESS);
+    }
+
+
+    @PostMapping("/check-verification")
+    public Api<?> checkVerification(
+            @Valid
+            @RequestBody VerificationCodeRequest verificationCodeRequest
+    ) {
+        authService.checkVerification(verificationCodeRequest);
+        return Api.success(AuthSuccessType.EMAIL_VERIFICATION);
     }
 }
