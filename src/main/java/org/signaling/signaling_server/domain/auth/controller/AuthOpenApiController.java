@@ -4,11 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.signaling.signaling_server.common.api.Api;
 import org.signaling.signaling_server.common.type.success.AuthSuccessType;
+import org.signaling.signaling_server.domain.auth.dto.request.EmailRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignInRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignUpRequest;
 import org.signaling.signaling_server.domain.auth.dto.response.SignInResponse;
 import org.signaling.signaling_server.domain.auth.service.AuthService;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,5 +35,14 @@ public class AuthOpenApiController implements AuthOpenApi {
     ){
             SignInResponse signInResponse = authService.signIn(signInRequest);
             return Api.success(AuthSuccessType.SIGN_IN,signInResponse);
+    }
+
+    @PostMapping("/email-verification")
+    public Api<?> sendCode(
+            @Valid
+            @RequestBody EmailRequest emailRequest
+    ){
+        authService.sendCode(emailRequest);
+        return Api.success(AuthSuccessType.EMAIL_SEND_SUCCESS);
     }
 }
