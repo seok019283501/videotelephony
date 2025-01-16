@@ -45,7 +45,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         jpaQueryFactory.update(memberEntity)
                 .set(memberEntity.password, password)
                 .where(memberEntity.email.eq(email))
-                .execute();;
+                .execute();
     }
 
     @Override
@@ -53,12 +53,20 @@ public class MemberRepositoryImpl implements MemberRepository {
         jpaQueryFactory.update(memberEntity)
                 .set(memberEntity.password, password)
                 .where(memberEntity.id.eq(id))
-                .execute();;
+                .execute();
     }
 
     @Override
     public Optional<MemberEntity> findByEmail(String email) {
         return jpaMemberRepository.findByEmail(email);
+    }
+
+    @Override
+    public void updateNicknameByUId(Long id, String nickname) {
+        jpaQueryFactory.update(memberEntity)
+                .set(memberEntity.nickname, nickname)
+                .where(memberEntity.id.eq(id))
+                .execute();
     }
 
 

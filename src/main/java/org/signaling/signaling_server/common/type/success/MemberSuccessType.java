@@ -1,7 +1,8 @@
 package org.signaling.signaling_server.common.type.success;
 
 public enum MemberSuccessType implements SuccessTypeCode{
-    MEMBER_INFO(200, "OK", "회원정보 조회를 성공하였습니다.");
+    MEMBER_INFO(200, "OK", "회원정보 조회를 성공하였습니다."),
+    CHANGE_NICKNAME(200, "OK", "닉네임 변경에 성공하였습니다.");
     private final Integer code;
     private final String message;
     private final String description;

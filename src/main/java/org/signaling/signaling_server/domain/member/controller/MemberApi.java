@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.signaling.signaling_server.common.api.Api;
 import org.signaling.signaling_server.domain.auth.dto.response.SignInResponse;
+import org.signaling.signaling_server.domain.member.dto.request.ChangeNicknameRequest;
 import org.signaling.signaling_server.domain.member.dto.response.MemberInfoResponse;
 import org.springframework.security.core.Authentication;
 
@@ -11,4 +12,6 @@ import org.springframework.security.core.Authentication;
 public interface MemberApi {
     @Operation(summary = "회원정보를 조회합니다.", description = "담당자: 최민석")
     Api<MemberInfoResponse> memberInfo(Authentication authentication);
+    @Operation(summary = "닉네임을 변경합니다.", description = "담당자: 최민석")
+    Api<?> changeNickname(Authentication authentication, ChangeNicknameRequest changeNicknameRequest);
 }
