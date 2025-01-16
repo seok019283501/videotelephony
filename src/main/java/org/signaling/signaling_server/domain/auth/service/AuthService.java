@@ -11,6 +11,7 @@ import org.signaling.signaling_server.common.exception.UnauthorizedException;
 import org.signaling.signaling_server.common.type.error.AuthErrorType;
 import org.signaling.signaling_server.common.utils.JwtUtils;
 import org.signaling.signaling_server.domain.auth.dto.request.*;
+import org.signaling.signaling_server.domain.auth.dto.response.FindUsernameResponse;
 import org.signaling.signaling_server.domain.auth.dto.response.ReissueAccessTokenResponse;
 import org.signaling.signaling_server.domain.auth.dto.response.SignInResponse;
 import org.signaling.signaling_server.domain.auth.mapper.AuthEntityMapper;
@@ -333,5 +334,13 @@ public class AuthService {
 
         memberRepository.updatePasswordById(encodedPassword,userDetails.getId());
 
+    }
+
+    //유저 아이디 찾기
+    public FindUsernameResponse findUsername(EmailRequest emailRequest) {
+        MemberEntity memberEntity = memberRepository.findByEmail(emailRequest.email())
+                .orElseThrow(()->new BadRequestException(AuthErrorType.NOT_FOUND));
+
+        return AuthResponseMapper.toFindUsernameResponse(memberEntity.getUsername());
     }
 }

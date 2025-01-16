@@ -18,4 +18,6 @@ public interface MemberRepository {
     void updatePasswordByEmail(String password, String email);
 
     void updatePasswordById(String password, Long id);
+
+    Optional<MemberEntity> findByEmail(String email);
 }

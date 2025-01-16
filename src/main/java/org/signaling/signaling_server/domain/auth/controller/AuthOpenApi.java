@@ -7,9 +7,8 @@ import org.signaling.signaling_server.domain.auth.dto.request.EmailRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignInRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignUpRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.VerificationCodeRequest;
-import org.signaling.signaling_server.domain.auth.dto.response.IssuePasswordResponse;
+import org.signaling.signaling_server.domain.auth.dto.response.FindUsernameResponse;
 import org.signaling.signaling_server.domain.auth.dto.response.SignInResponse;
-import org.springframework.security.core.Authentication;
 
 @Tag(name = "Auth Open Api", description = "인증 관련 Open API 목록입니다.")
 public interface AuthOpenApi {
@@ -23,6 +22,9 @@ public interface AuthOpenApi {
     @Operation(summary = "이메일 인증코드를 발송합니다.", description = "담당자: 최민석")
     Api<?> checkVerification(VerificationCodeRequest verificationCodeRequest);
     @Operation(summary = "임시 비밀번호를 발송합니다.", description = "담당자: 최민석")
-    Api<IssuePasswordResponse> issuePassword(EmailRequest emailRequest);
+    Api<?> issuePassword(EmailRequest emailRequest);
+
+    @Operation(summary = "아이디 찾기를 합니다.", description = "담당자: 최민석")
+    Api<FindUsernameResponse> findUsername(EmailRequest emailRequest);
 
 }
