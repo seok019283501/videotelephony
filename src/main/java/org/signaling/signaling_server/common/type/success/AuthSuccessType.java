@@ -8,7 +8,9 @@ public enum AuthSuccessType implements SuccessTypeCode {
     EMAIL_SEND_SUCCESS(200,"OK", "이메일로 인증코드 전송에 성공하였습니다."),
     EMAIL_VERIFICATION(200, "OK", "이메일 인증코드 검증에 성공하였습니다."),
     ISSUE_PASSWORD(200,"OK","임시비밀번호 발급에 성공하였습니다."),
-    CHANGE_PASSWORD(200,"OK","비밀번호 변경에 성공하였습니다.");
+    CHANGE_PASSWORD(200,"OK","비밀번호 변경에 성공하였습니다."),
+    FIND_USERNAME(200,"OK","아이디 찾기에 성공하였습니다.");
+
 
     private final Integer code;
     private final String message;

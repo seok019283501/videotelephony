@@ -56,5 +56,10 @@ public class MemberRepositoryImpl implements MemberRepository {
                 .execute();;
     }
 
+    @Override
+    public Optional<MemberEntity> findByEmail(String email) {
+        return jpaMemberRepository.findByEmail(email);
+    }
+
 
 }

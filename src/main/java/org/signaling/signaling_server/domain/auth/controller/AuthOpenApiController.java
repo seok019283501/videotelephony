@@ -8,7 +8,7 @@ import org.signaling.signaling_server.domain.auth.dto.request.EmailRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignInRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.SignUpRequest;
 import org.signaling.signaling_server.domain.auth.dto.request.VerificationCodeRequest;
-import org.signaling.signaling_server.domain.auth.dto.response.IssuePasswordResponse;
+import org.signaling.signaling_server.domain.auth.dto.response.FindUsernameResponse;
 import org.signaling.signaling_server.domain.auth.dto.response.SignInResponse;
 import org.signaling.signaling_server.domain.auth.service.AuthService;
 import org.springframework.web.bind.annotation.*;
@@ -56,11 +56,20 @@ public class AuthOpenApiController implements AuthOpenApi {
     }
 
     @PatchMapping("/reset-password")
-    public Api<IssuePasswordResponse> issuePassword(
+    public Api<?> issuePassword(
             @Valid
             @RequestBody EmailRequest emailRequest
     ) {
         authService.issuePassword(emailRequest);
         return Api.success(AuthSuccessType.ISSUE_PASSWORD);
+    }
+
+    @GetMapping("/find-username")
+    public Api<FindUsernameResponse> findUsername(
+            @Valid
+            @RequestBody EmailRequest emailRequest
+    ) {
+        FindUsernameResponse findUsernameResponse = authService.findUsername(emailRequest);
+        return Api.success(AuthSuccessType.FIND_USERNAME,findUsernameResponse);
     }
 }

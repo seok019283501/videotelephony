@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
+@Schema(description = "로그인 응답")
 public record SignInResponse(
         @NotBlank @Schema(description = "access token", example = "Bearer asdf...") String accessToken,
         @NotBlank @Schema(description = "refresh token", example = "Bearer asdf...") String refreshToken
