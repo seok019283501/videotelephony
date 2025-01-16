@@ -20,4 +20,6 @@ public interface MemberRepository {
     void updatePasswordById(String password, Long id);
 
     Optional<MemberEntity> findByEmail(String email);
+
+    void updateNicknameByUId(Long id, String nickname);
 }

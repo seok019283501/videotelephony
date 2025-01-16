@@ -9,6 +9,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
+@Schema(description = "회원정보 조회 응답")
 public record MemberInfoResponse(
         @NotBlank @Schema(description = "아이디", example = "test1234") String username,
         @NotBlank  @Schema(description = "회원이름", example = "최민석") String name,
