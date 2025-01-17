@@ -4,9 +4,8 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum FriendStatus {
-        REQUEST("REQUEST"),        // 친구 요청
-        ACCEPT("ACCEPT"),         // 수락
-        REJECT("REJECT"),         // 거절
-        CANCEL("CANCEL");         // 요청 취소
+    REQUEST("REQUEST"),
+    ACCEPT("ACCEPT")
+    ;
     private final String description;
 }

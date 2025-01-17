@@ -9,4 +9,6 @@ public interface FriendRepository {
     void updateStatusById(Long friendId, FriendStatus status);
 
     boolean existsByIdAndToMemberId(Long id, Long toMemberId);
+
+    void deleteByIdAndFromMemberOrToMember(Long friendId, Long memberId);
 }

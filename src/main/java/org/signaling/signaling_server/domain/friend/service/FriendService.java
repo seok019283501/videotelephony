@@ -4,9 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.signaling.signaling_server.common.exception.BadRequestException;
-import org.signaling.signaling_server.common.type.error.AuthErrorType;
 import org.signaling.signaling_server.common.type.error.FriendErrorType;
-import org.signaling.signaling_server.domain.friend.dto.request.AcceptFriendRequest;
+import org.signaling.signaling_server.domain.friend.dto.request.FriendIdRequest;
 import org.signaling.signaling_server.domain.friend.dto.request.AddFriendRequest;
 import org.signaling.signaling_server.domain.friend.mapper.FriendEntityMapper;
 import org.signaling.signaling_server.domain.friend.mapper.FriendResponseMapper;
@@ -25,8 +24,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class FriendService {
     private final FriendRepository friendRepository;
-    private final KafkaProducerService kafkaProducerService; // Kafka Producer 주입
-    private final SimpMessageSendingOperations messagingTemplate;
+    private final KafkaProducerService kafkaProducerService;
 
     @Transactional
     public void addFriend(AddFriendRequest addFriendRequest, Authentication authentication) {
@@ -52,14 +50,22 @@ public class FriendService {
     }
 
     @Transactional
-    public void acceptFriend(AcceptFriendRequest acceptFriendRequest, Authentication authentication) {
+    public void acceptFriend(FriendIdRequest friendIdRequest, Authentication authentication) {
         CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
 
         // 허가 권한이 있는지 확인
-        if(!friendRepository.existsByIdAndToMemberId(acceptFriendRequest.friendId(), userDetails.getId())){
+        if(!friendRepository.existsByIdAndToMemberId(friendIdRequest.friendId(), userDetails.getId())){
             throw new BadRequestException(FriendErrorType.WRONG_ACCEPT);
         }
 
-        friendRepository.updateStatusById(acceptFriendRequest.friendId(), FriendStatus.ACCEPT);
+        friendRepository.updateStatusById(friendIdRequest.friendId(), FriendStatus.ACCEPT);
+    }
+
+
+    @Transactional
+    public void deleteFriend(FriendIdRequest friendIdRequest, Authentication authentication) {
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+
+        friendRepository.deleteByIdAndFromMemberOrToMember(friendIdRequest.friendId(),userDetails.getId());
     }
 }
