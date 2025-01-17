@@ -1,7 +1,9 @@
 package org.signaling.signaling_server.common.type.error;
 
 public enum FriendErrorType implements ErrorTypeCode{
-    FRIEND_REQUEST("BAD REQUEST", "이미 친구 요청을 보냈습니다.");
+    FRIEND_REQUEST("BAD REQUEST", "이미 친구 요청을 보냈습니다."),
+    WRONG_ACCEPT("BAD REQUEST", "잘못된 허가 요청입니다.")
+    ;
 
     private final String message;
     private final String description;
