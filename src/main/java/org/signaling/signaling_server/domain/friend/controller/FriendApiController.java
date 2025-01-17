@@ -4,12 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.signaling.signaling_server.common.api.Api;
 import org.signaling.signaling_server.common.type.success.FriendSuccessType;
-import org.signaling.signaling_server.domain.friend.dto.request.AcceptFriendRequest;
+import org.signaling.signaling_server.domain.friend.dto.request.FriendIdRequest;
 import org.signaling.signaling_server.domain.friend.dto.request.AddFriendRequest;
 import org.signaling.signaling_server.domain.friend.service.FriendService;
-import org.signaling.signaling_server.kafka.dto.FriendNotification;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,13 +28,23 @@ public class FriendApiController implements FriendApi {
         return Api.success(FriendSuccessType.ADD_FRIEND);
     }
 
-    @PatchMapping("accept")
+    @PatchMapping("/accept")
     public Api<?> acceptFriend(
             @Valid
-            @RequestBody AcceptFriendRequest acceptFriendRequest,
+            @RequestBody FriendIdRequest friendIdRequest,
             Authentication authentication
     ) {
-        friendService.acceptFriend(acceptFriendRequest, authentication);
+        friendService.acceptFriend(friendIdRequest, authentication);
         return Api.success(FriendSuccessType.ACCEPT_ADD_FRIEND);
+    }
+
+    @DeleteMapping
+    public Api<?> deleteFriend(
+            @Valid
+            @RequestBody FriendIdRequest friendIdRequest,
+            Authentication authentication
+    ) {
+        friendService.deleteFriend(friendIdRequest, authentication);
+        return Api.success(FriendSuccessType.DELETE_FRIEND);
     }
 }

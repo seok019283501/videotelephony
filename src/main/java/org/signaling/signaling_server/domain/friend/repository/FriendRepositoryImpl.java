@@ -36,4 +36,17 @@ public class FriendRepositoryImpl implements FriendRepository {
     public boolean existsByIdAndToMemberId(Long id, Long toMemberId) {
         return jpaFriendRepository.existsByIdAndToMemberId(id, toMemberId);
     }
+
+    @Override
+    public void deleteByIdAndFromMemberOrToMember(Long friendId, Long memberId) {
+        jpaQueryFactory.delete(friendEntity)
+                .where(
+                        friendEntity.id.eq(friendId)
+                                .and(
+                                        friendEntity.fromMemberId.eq(memberId)
+                                                .or(friendEntity.toMemberId.eq(memberId))
+                                )
+                )
+                .execute();
+    }
 }
