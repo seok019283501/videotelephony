@@ -35,7 +35,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String uri = request.getRequestURI();
-        if (uri.contains("/open-api")
+        if (uri.startsWith("/ws")
+                ||uri.contains("/open-api")
                 || uri.contains("/swagger-ui")
                 || uri.contains("/v3/api-docs")
                 || uri.contains("/static")) {
