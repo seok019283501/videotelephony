@@ -51,6 +51,9 @@ dependencies {
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.4.1'
+
+    implementation 'org.springframework.boot:spring-boot-starter-websocket:3.4.1'
+    implementation 'org.springframework.kafka:spring-kafka'
 }
 
 def generated = file("src/main/generated")
