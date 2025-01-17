@@ -4,7 +4,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.signaling.signaling_server.common.exception.BadRequestException;
+import org.signaling.signaling_server.common.type.error.AuthErrorType;
 import org.signaling.signaling_server.common.type.error.FriendErrorType;
+import org.signaling.signaling_server.domain.friend.dto.request.AcceptFriendRequest;
 import org.signaling.signaling_server.domain.friend.dto.request.AddFriendRequest;
 import org.signaling.signaling_server.domain.friend.mapper.FriendEntityMapper;
 import org.signaling.signaling_server.domain.friend.mapper.FriendResponseMapper;
@@ -47,5 +49,17 @@ public class FriendService {
 
         // Kafka에 발행
         kafkaProducerService.sendFriendNotification(notification);
+    }
+
+    @Transactional
+    public void acceptFriend(AcceptFriendRequest acceptFriendRequest, Authentication authentication) {
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+
+        // 허가 권한이 있는지 확인
+        if(!friendRepository.existsByIdAndToMemberId(acceptFriendRequest.friendId(), userDetails.getId())){
+            throw new BadRequestException(FriendErrorType.WRONG_ACCEPT);
+        }
+
+        friendRepository.updateStatusById(acceptFriendRequest.friendId(), FriendStatus.ACCEPT);
     }
 }
