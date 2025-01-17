@@ -19,5 +19,6 @@ public class FriendEntity {
     private Long id;
     Long fromMemberId;
     Long toMemberId;
+    @Enumerated(value = EnumType.STRING)
     FriendStatus status;
 }
