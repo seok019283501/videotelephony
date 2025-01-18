@@ -20,5 +20,5 @@ public class CallRoomEntity {
     private Long id;
     private String roomName;
     private LocalDateTime createdAt;
-    private LocalDateTime upDatedAt;
+    private LocalDateTime updatedAt;
 }

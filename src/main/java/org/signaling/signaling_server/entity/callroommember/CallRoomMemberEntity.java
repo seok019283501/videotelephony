@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.signaling.signaling_server.entity.callroommember.enums.CallRoomMemberRole;
 
 @Entity
 @Getter
@@ -18,5 +19,6 @@ public class CallRoomMemberEntity {
     private Long id;
     private Long memberId;
     private Long callRoomId;
-    private String role;
+    @Enumerated(value = EnumType.STRING)
+    private CallRoomMemberRole role;
 }
