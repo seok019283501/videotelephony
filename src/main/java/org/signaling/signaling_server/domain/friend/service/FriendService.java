@@ -5,8 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.signaling.signaling_server.common.exception.BadRequestException;
 import org.signaling.signaling_server.common.type.error.FriendErrorType;
+import org.signaling.signaling_server.domain.friend.dto.FriendInfoDto;
 import org.signaling.signaling_server.domain.friend.dto.request.FriendIdRequest;
 import org.signaling.signaling_server.domain.friend.dto.request.AddFriendRequest;
+import org.signaling.signaling_server.domain.friend.dto.response.FriendInfoListResponse;
+import org.signaling.signaling_server.domain.friend.dto.response.FriendInfoResponse;
 import org.signaling.signaling_server.domain.friend.mapper.FriendEntityMapper;
 import org.signaling.signaling_server.domain.friend.mapper.FriendResponseMapper;
 import org.signaling.signaling_server.domain.friend.repository.FriendRepository;
@@ -18,6 +21,9 @@ import org.signaling.signaling_server.kafka.dto.FriendNotification;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +55,7 @@ public class FriendService {
         kafkaProducerService.sendFriendNotification(notification);
     }
 
+
     @Transactional
     public void acceptFriend(FriendIdRequest friendIdRequest, Authentication authentication) {
         CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
@@ -62,10 +69,24 @@ public class FriendService {
     }
 
 
+    //친구 삭제
     @Transactional
     public void deleteFriend(FriendIdRequest friendIdRequest, Authentication authentication) {
         CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
 
         friendRepository.deleteByIdAndFromMemberOrToMember(friendIdRequest.friendId(),userDetails.getId());
+    }
+
+    //친구 검색
+    public FriendInfoListResponse searchToFriend(String nickname, Authentication authentication) {
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+
+        List<FriendInfoDto> friendInfoDtoList = friendRepository.findByMemberId(nickname, userDetails.getId());
+        List<FriendInfoResponse> friendInfoResponseList = friendInfoDtoList.stream().map(
+                FriendResponseMapper::toFriendInfoResponse
+        ).toList();
+
+        return FriendResponseMapper.toFriendInfoListResponse(friendInfoResponseList);
+
     }
 }
