@@ -6,6 +6,7 @@ import org.signaling.signaling_server.common.api.Api;
 import org.signaling.signaling_server.common.type.success.FriendSuccessType;
 import org.signaling.signaling_server.domain.friend.dto.request.FriendIdRequest;
 import org.signaling.signaling_server.domain.friend.dto.request.AddFriendRequest;
+import org.signaling.signaling_server.domain.friend.dto.response.FriendInfoListResponse;
 import org.signaling.signaling_server.domain.friend.service.FriendService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -46,5 +47,14 @@ public class FriendApiController implements FriendApi {
     ) {
         friendService.deleteFriend(friendIdRequest, authentication);
         return Api.success(FriendSuccessType.DELETE_FRIEND);
+    }
+
+    @GetMapping
+    public Api<FriendInfoListResponse> searchToFriend(
+            @RequestParam String nickname,
+            Authentication authentication
+    ) {
+        FriendInfoListResponse friendInfoListResponse = friendService.searchToFriend(nickname,authentication);
+        return Api.success(FriendSuccessType.SEARCH_FRIEND,friendInfoListResponse);
     }
 }
