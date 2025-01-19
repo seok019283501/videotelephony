@@ -20,4 +20,7 @@ public interface CallRoomMemberApi {
 
     @Operation(summary = "통화방에서 퇴장합니다.", description = "담당자: 최민석")
     Api<?> exitRoom(ExitMemberRequest exitMemberRequest, Authentication authentication);
+
+    @Operation(summary = "통화방에서 퇴장합니다.", description = "담당자: 최민석")
+    Api<?> searchCallRoomMember(Long callRoomId, Authentication authentication);
 }
