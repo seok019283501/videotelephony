@@ -1,7 +1,8 @@
 package org.signaling.signaling_server.common.type.success;
 
 public enum CallRoomMemberSuccessType implements SuccessTypeCode {
-    INVITE_CALL_ROOM(200,"OK","통화방 초대에 성공하였습니다.")
+    INVITE_CALL_ROOM(200,"OK","통화방 초대에 성공하였습니다."),
+    EXPULSION_CALL_ROOM(200,"OK","통화방 회원 퇴출에 성공하였습니다.")
     ;
 
 

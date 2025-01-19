@@ -4,13 +4,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.signaling.signaling_server.common.api.Api;
 import org.signaling.signaling_server.common.type.success.CallRoomMemberSuccessType;
-import org.signaling.signaling_server.domain.callroommember.dto.request.InviteCallRoomRequest;
+import org.signaling.signaling_server.common.type.success.CallRoomSuccessType;
+import org.signaling.signaling_server.domain.callroommember.dto.request.ExpulsionMemberRequest;
+import org.signaling.signaling_server.domain.callroommember.dto.request.InviteMemberIdRequest;
 import org.signaling.signaling_server.domain.callroommember.service.CallRoomMemberService;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,10 +20,21 @@ public class CallRoomMemberApiController implements CallRoomMemberApi{
     @PostMapping("/invite")
     public Api<?> inviteRoom(
             @Valid
-            @RequestBody InviteCallRoomRequest inviteCallRoomRequest,
+            @RequestBody InviteMemberIdRequest inviteMemberIdRequest,
             Authentication authentication
     ){
-        callRoomMemberService.inviteRoom(inviteCallRoomRequest, authentication);
+        callRoomMemberService.inviteRoom(inviteMemberIdRequest, authentication);
         return Api.success(CallRoomMemberSuccessType.INVITE_CALL_ROOM);
+    }
+
+    @DeleteMapping("/expulsion")
+    public Api<?> expulsionRoom(
+            @Valid
+            @RequestBody ExpulsionMemberRequest expulsionMemberRequest,
+            Authentication authentication
+    ) {
+        callRoomMemberService.expulsionRoom(expulsionMemberRequest,authentication);
+
+        return Api.success(CallRoomMemberSuccessType.EXPULSION_CALL_ROOM);
     }
 }
