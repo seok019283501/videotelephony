@@ -1,5 +1,6 @@
 package org.signaling.signaling_server.domain.callroom.repository;
 
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.signaling.signaling_server.entity.callroom.CallRoomEntity;
@@ -10,6 +11,7 @@ import java.util.Optional;
 
 import static org.signaling.signaling_server.entity.callroom.QCallRoomEntity.callRoomEntity;
 import static org.signaling.signaling_server.entity.callroommember.QCallRoomMemberEntity.callRoomMemberEntity;
+import static org.signaling.signaling_server.entity.member.QMemberEntity.memberEntity;
 
 @Repository
 @RequiredArgsConstructor
@@ -41,16 +43,22 @@ public class CallRoomRepositoryImpl implements CallRoomRepository{
     @Override
     public List<CallRoomEntity> findBySearchAndMemberId(String search, Long memberId) {
         return jpaQueryFactory
-                .select(callRoomEntity)
+                .selectDistinct(callRoomEntity)
                 .from(callRoomEntity)
-                .leftJoin(callRoomMemberEntity)
-                .on(callRoomEntity.id.eq(callRoomMemberEntity.callRoomId)) // call_room과 call_room_member 조인
+                .leftJoin(callRoomMemberEntity).on(callRoomEntity.id.eq(callRoomMemberEntity.callRoomId)) // call_room과 call_room_member 조인
+                .leftJoin(memberEntity).on(callRoomMemberEntity.memberId.eq(memberEntity.id)) // call_room_member와 member 조인
                 .where(
-                        callRoomMemberEntity.memberId.eq(memberId) // member가 속한 call_room 조건
+                        callRoomMemberEntity.callRoomId.in( // 요청한 회원이 속한 방 필터링
+                                        JPAExpressions
+                                                .select(callRoomMemberEntity.callRoomId)
+                                                .from(callRoomMemberEntity)
+                                                .where(callRoomMemberEntity.memberId.eq(memberId))
+                                )
                                 .and(
-                                        search == null || search.isEmpty() // search 조건 추가
-                                                ? null
-                                                : callRoomEntity.roomName.containsIgnoreCase(search) // room_name 검색
+                                        search == null || search.isEmpty() // search 조건
+                                                ? null // search가 없으면 조건 무시
+                                                : callRoomEntity.roomName.containsIgnoreCase(search) // roomName 검색
+                                                .or(memberEntity.nickname.containsIgnoreCase(search)) // member.nickname 검색
                                 )
                 )
                 .fetch();
