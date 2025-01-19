@@ -28,7 +28,7 @@ CREATE TABLE `call_room_member` (
                                     `id` bigint PRIMARY KEY NOT NULL AUTO_INCREMENT,
                                     `member_id` bigint NOT NULL,
                                     `call_room_id` bigint NOT NULL,
-                                    `role` varchar(10) NOT NULL
+                                    `role` varchar(11) NOT NULL
 );
 
 ALTER TABLE `friend` ADD FOREIGN KEY (`from_member_id`) REFERENCES `member` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;

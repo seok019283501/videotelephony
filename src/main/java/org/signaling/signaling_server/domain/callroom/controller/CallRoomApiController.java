@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.signaling.signaling_server.common.api.Api;
 import org.signaling.signaling_server.common.type.success.CallRoomSuccessType;
 import org.signaling.signaling_server.domain.callroom.service.CallRoomService;
-import org.signaling.signaling_server.domain.callroommember.controller.CallRoomMemberApi;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

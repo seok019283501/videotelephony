@@ -4,4 +4,7 @@ import org.signaling.signaling_server.entity.callroommember.CallRoomMemberEntity
 
 public interface CallRoomMemberRepository {
     void save(CallRoomMemberEntity callRoomMemberEntity);
+
+    //회원 유무 확인
+    boolean existsByCallRoomIdAndMemberId(Long callRoomId, Long memberId);
 }
