@@ -10,6 +10,5 @@ public interface JpaCallRoomMemberRepository extends JpaRepository<CallRoomMembe
 
     boolean existsByCallRoomIdAndMemberIdAndRole(Long callRoomId, Long memberId, CallRoomMemberRole role);
 
-    void deleteById(Long id);
-
+    void deleteByCallRoomIdAndMemberId(Long callRoomId, Long memberId);
 }

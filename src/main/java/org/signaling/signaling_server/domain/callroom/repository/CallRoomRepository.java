@@ -8,4 +8,8 @@ public interface CallRoomRepository {
     CallRoomEntity save(CallRoomEntity callRoomEntity);
 
     Optional<CallRoomEntity> findById(Long callRoomId);
+
+    void deleteById(Long callRoomMemberId);
+
+    boolean existsById(Long id);
 }

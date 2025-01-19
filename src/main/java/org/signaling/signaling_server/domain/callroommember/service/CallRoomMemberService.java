@@ -1,11 +1,13 @@
 package org.signaling.signaling_server.domain.callroommember.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.signaling.signaling_server.common.exception.BadRequestException;
 import org.signaling.signaling_server.common.exception.NotFoundException;
 import org.signaling.signaling_server.common.type.error.CallRoomErrorType;
 import org.signaling.signaling_server.common.type.error.CallRoomMemberErrorType;
 import org.signaling.signaling_server.common.type.error.MemberErrorType;
+import org.signaling.signaling_server.domain.callroommember.dto.request.ExitMemberRequest;
 import org.signaling.signaling_server.domain.callroommember.dto.request.ExpulsionMemberRequest;
 import org.signaling.signaling_server.domain.callroommember.dto.request.InviteMemberIdRequest;
 import org.signaling.signaling_server.domain.callroom.repository.CallRoomRepository;
@@ -70,6 +72,10 @@ public class CallRoomMemberService {
     public void expulsionRoom(ExpulsionMemberRequest expulsionMemberRequest, Authentication authentication) {
         CustomUserDetail userDetail = (CustomUserDetail) authentication.getPrincipal();
 
+        if(callRoomRepository.existsById(expulsionMemberRequest.callRoomId())){
+            throw new NotFoundException(CallRoomErrorType.NOT_FOUND);
+        }
+
         //회원 퇴출 권한이 있는지 확인
         if(!callRoomMemberRepository.existsByCallRoomIdAndMemberIdAndRole(expulsionMemberRequest.callRoomId(), userDetail.getId(), CallRoomMemberRole.MANAGER)){
             throw new BadRequestException(CallRoomMemberErrorType.MANAGER_MEMBER);
@@ -84,5 +90,24 @@ public class CallRoomMemberService {
         }
 
         callRoomMemberRepository.deleteById(expulsionMemberRequest.callRoomMemberId());
+    }
+
+    @Transactional
+    public void exitRoom(ExitMemberRequest exitMemberRequest, Authentication authentication) {
+        CustomUserDetail userDetail = (CustomUserDetail) authentication.getPrincipal();
+
+        if(!callRoomRepository.existsById(exitMemberRequest.callRoomId())){
+            throw new NotFoundException(CallRoomErrorType.NOT_FOUND);
+        }
+
+        //방장일 경우 통화방 삭제
+        if(callRoomMemberRepository.existsByCallRoomIdAndMemberIdAndRole(exitMemberRequest.callRoomId(), userDetail.getId(), CallRoomMemberRole.MANAGER)){
+            callRoomRepository.deleteById(exitMemberRequest.callRoomId());
+            return;
+        }
+
+        //일반 회원일 경우
+        callRoomMemberRepository.deleteByCallRoomIdAndMemberId(exitMemberRequest.callRoomId(), userDetail.getId());
+
     }
 }

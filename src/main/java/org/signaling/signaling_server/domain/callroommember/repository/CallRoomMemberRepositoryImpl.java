@@ -28,12 +28,17 @@ public class CallRoomMemberRepositoryImpl implements CallRoomMemberRepository{
     }
 
     @Override
-    public void deleteById(Long id) {
-        jpaCallRoomMemberRepository.deleteById(id);
+    public void deleteByCallRoomIdAndMemberId(Long callRoomId, Long memberId) {
+        jpaCallRoomMemberRepository.deleteByCallRoomIdAndMemberId(callRoomId, memberId);
     }
 
     @Override
     public Optional<CallRoomMemberEntity> findById(Long id) {
         return jpaCallRoomMemberRepository.findById(id);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        jpaCallRoomMemberRepository.deleteById(id);
     }
 }
