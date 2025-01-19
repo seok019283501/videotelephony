@@ -14,4 +14,9 @@ public class CallRoomRepositoryImpl implements CallRoomRepository{
     public CallRoomEntity save(CallRoomEntity callRoomEntity) {
         return jpaCallRoomRepository.save(callRoomEntity);
     }
+
+    @Override
+    public Optional<CallRoomEntity> findById(Long callRoomId) {
+        return jpaCallRoomRepository.findById(callRoomId);
+    }
 }

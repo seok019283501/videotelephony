@@ -2,8 +2,6 @@ package org.signaling.signaling_server.domain.callroom.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.signaling.signaling_server.common.exception.NotFoundException;
-import org.signaling.signaling_server.common.type.error.CallRoomErrorType;
 import org.signaling.signaling_server.domain.callroom.mapper.CallRoomEntityMapper;
 import org.signaling.signaling_server.domain.callroom.repository.CallRoomRepository;
 import org.signaling.signaling_server.domain.callroommember.mapper.CallRoomMemberEntityMapper;
@@ -34,7 +32,7 @@ public class CallRoomService {
 
         CallRoomEntity newCallRoomEntity = callRoomRepository.save(callRoomEntity);
 
-        CallRoomMemberEntity callRoomMemberEntity = CallRoomMemberEntityMapper.toCallRoomMemberEntity(userDetails.getMemberEntity(), newCallRoomEntity.getId(), CallRoomMemberRole.MANAGER);
+        CallRoomMemberEntity callRoomMemberEntity = CallRoomMemberEntityMapper.toCallRoomMemberEntity(userDetails.getId(), newCallRoomEntity.getId(), CallRoomMemberRole.MANAGER);
 
         callRoomMemberRepository.save(callRoomMemberEntity);
     }

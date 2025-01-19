@@ -13,4 +13,9 @@ public class CallRoomMemberRepositoryImpl implements CallRoomMemberRepository{
     public void save(CallRoomMemberEntity callRoomMemberEntity) {
         callRoomMemberRepository.save(callRoomMemberEntity);
     }
+
+    @Override
+    public boolean existsByCallRoomIdAndMemberId(Long callRoomId, Long memberId) {
+        return callRoomMemberRepository.existsByCallRoomIdAndMemberId(callRoomId,memberId);
+    }
 }

@@ -6,10 +6,10 @@ import org.signaling.signaling_server.entity.member.MemberEntity;
 
 public class CallRoomMemberEntityMapper {
 
-    public static CallRoomMemberEntity toCallRoomMemberEntity(MemberEntity memberEntity, Long callRoomId, CallRoomMemberRole role){
+    public static CallRoomMemberEntity toCallRoomMemberEntity(Long memberId, Long callRoomId, CallRoomMemberRole role){
         return CallRoomMemberEntity.builder()
                 .callRoomId(callRoomId)
-                .memberId(memberEntity.getId())
+                .memberId(memberId)
                 .role(role)
                 .build();
     }
