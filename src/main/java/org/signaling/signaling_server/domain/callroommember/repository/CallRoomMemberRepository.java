@@ -1,8 +1,10 @@
 package org.signaling.signaling_server.domain.callroommember.repository;
 
+import org.signaling.signaling_server.domain.callroommember.dto.CallRoomMemberInfoDto;
 import org.signaling.signaling_server.entity.callroommember.CallRoomMemberEntity;
 import org.signaling.signaling_server.entity.callroommember.enums.CallRoomMemberRole;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CallRoomMemberRepository {
@@ -20,4 +22,6 @@ public interface CallRoomMemberRepository {
 
 
     void deleteById(Long id);
+
+    List<CallRoomMemberInfoDto> findByCallRoomId(Long callRoomId);
 }

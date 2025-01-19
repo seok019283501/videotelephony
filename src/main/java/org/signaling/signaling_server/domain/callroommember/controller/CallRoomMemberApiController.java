@@ -8,6 +8,7 @@ import org.signaling.signaling_server.common.type.success.CallRoomSuccessType;
 import org.signaling.signaling_server.domain.callroommember.dto.request.ExitMemberRequest;
 import org.signaling.signaling_server.domain.callroommember.dto.request.ExpulsionMemberRequest;
 import org.signaling.signaling_server.domain.callroommember.dto.request.InviteMemberIdRequest;
+import org.signaling.signaling_server.domain.callroommember.dto.response.CallRoomMemberInfoListResponse;
 import org.signaling.signaling_server.domain.callroommember.service.CallRoomMemberService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -49,5 +50,14 @@ public class CallRoomMemberApiController implements CallRoomMemberApi{
     ){
         callRoomMemberService.exitRoom(exitMemberRequest, authentication);
         return Api.success(CallRoomMemberSuccessType.EXIT_CALL_ROOM);
+    }
+
+    @GetMapping("/{callRoomId}")
+    public Api<CallRoomMemberInfoListResponse> searchCallRoomMember(
+            @PathVariable("callRoomId") Long callRoomId,
+            Authentication authentication
+    ) {
+        CallRoomMemberInfoListResponse callRoomMemberInfoListResponse = callRoomMemberService.searchCallRoomMember(callRoomId, authentication);
+        return Api.success(CallRoomMemberSuccessType.SEARCH_CALL_ROOM_MEMBER,callRoomMemberInfoListResponse);
     }
 }
