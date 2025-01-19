@@ -19,4 +19,14 @@ public class CallRoomRepositoryImpl implements CallRoomRepository{
     public Optional<CallRoomEntity> findById(Long callRoomId) {
         return jpaCallRoomRepository.findById(callRoomId);
     }
+
+    @Override
+    public void deleteById(Long callRoomId) {
+        jpaCallRoomRepository.deleteById(callRoomId);
+    }
+
+    @Override
+    public boolean existsById(Long id){
+        return jpaCallRoomRepository.existsById(id);
+    }
 }

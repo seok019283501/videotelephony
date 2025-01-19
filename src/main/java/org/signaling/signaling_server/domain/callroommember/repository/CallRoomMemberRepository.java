@@ -14,7 +14,10 @@ public interface CallRoomMemberRepository {
     //회원이 방장인지 확인
     boolean existsByCallRoomIdAndMemberIdAndRole(Long callRoomId, Long memberId, CallRoomMemberRole role);
 
-    void deleteById(Long id);
+    void deleteByCallRoomIdAndMemberId(Long callRoomId, Long memberId);
 
     Optional<CallRoomMemberEntity> findById(Long id);
+
+
+    void deleteById(Long id);
 }

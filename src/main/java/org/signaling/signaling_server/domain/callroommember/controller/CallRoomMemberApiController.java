@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.signaling.signaling_server.common.api.Api;
 import org.signaling.signaling_server.common.type.success.CallRoomMemberSuccessType;
 import org.signaling.signaling_server.common.type.success.CallRoomSuccessType;
+import org.signaling.signaling_server.domain.callroommember.dto.request.ExitMemberRequest;
 import org.signaling.signaling_server.domain.callroommember.dto.request.ExpulsionMemberRequest;
 import org.signaling.signaling_server.domain.callroommember.dto.request.InviteMemberIdRequest;
 import org.signaling.signaling_server.domain.callroommember.service.CallRoomMemberService;
@@ -27,6 +28,7 @@ public class CallRoomMemberApiController implements CallRoomMemberApi{
         return Api.success(CallRoomMemberSuccessType.INVITE_CALL_ROOM);
     }
 
+    //방 퇴출
     @DeleteMapping("/expulsion")
     public Api<?> expulsionRoom(
             @Valid
@@ -36,5 +38,16 @@ public class CallRoomMemberApiController implements CallRoomMemberApi{
         callRoomMemberService.expulsionRoom(expulsionMemberRequest,authentication);
 
         return Api.success(CallRoomMemberSuccessType.EXPULSION_CALL_ROOM);
+    }
+
+    //방 퇴장
+    @DeleteMapping("/exit")
+    public Api<?> exitRoom(
+            @Valid
+            @RequestBody ExitMemberRequest exitMemberRequest,
+            Authentication authentication
+    ){
+        callRoomMemberService.exitRoom(exitMemberRequest, authentication);
+        return Api.success(CallRoomMemberSuccessType.EXIT_CALL_ROOM);
     }
 }
